@@ -6,7 +6,7 @@ Desktop.ini
 .vscode/
 *.swp
 *.swo
-
+# 依赖
 node_modules/
 dist/
 build/
@@ -21,3 +21,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# 服务端敏感配置
+server/config/config.local.js
+server/config/config.prod.js
+
+# 构建产物
+admin/dist/
+miniprogram/miniprogram_npm/
+
+# 日志
+server/logs/
+server/run/
