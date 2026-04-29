@@ -58,6 +58,21 @@ module.exports = appInfo => {
     fileSize: '10mb',
   };
 
+  config.swaggerdoc = {
+    dirScanner: './app/controller',
+    apiInfo: {
+      title: 'tom-mall API',
+      description: 'tom-mall 服务端接口文档',
+      version: '1.0.0',
+    },
+    schemes: [ 'http' ],
+    consumes: [ 'application/json' ],
+    produces: [ 'application/json' ],
+    enableSecurity: false,
+    routerMap: false,
+    enable: true,
+  };
+
   return {
     ...config,
   };
