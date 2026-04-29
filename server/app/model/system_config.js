@@ -5,7 +5,7 @@ module.exports = app => {
 
   const SystemConfig = app.model.define('SystemConfig', {
     id: { type: INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
-    groupName: { type: STRING(50), allowNull: false, field: 'group_name' },
+    group: { type: STRING(50), allowNull: false },
     key: { type: STRING(100), allowNull: false },
     value: TEXT,
     type: { type: STRING(20), defaultValue: 'string' },

@@ -12,6 +12,7 @@ module.exports = app => {
     discountAmount: { type: DECIMAL(10, 2), defaultValue: 0 },
     freightAmount: { type: DECIMAL(10, 2), defaultValue: 0 },
     payAmount: { type: DECIMAL(10, 2), allowNull: false },
+    couponId: BIGINT.UNSIGNED,
     payType: TINYINT,
     payTime: DATE,
     receiverName: { type: STRING(50), allowNull: false },
