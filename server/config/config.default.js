@@ -8,13 +8,7 @@ module.exports = appInfo => {
 
   config.keys = `${appInfo.name}_1745913600`;
 
-  config.middleware = [ 'errorHandler', 'cors' ];
-
-  config.cors = {
-    origin: '*',
-    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    credentials: true,
-  };
+  config.middleware = [ 'errorHandler', 'appCors' ];
 
   config.security = {
     csrf: {
