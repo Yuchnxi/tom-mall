@@ -1,0 +1,32 @@
+{
+  "name": "tom-mall-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "tom-mall 服务端",
+  "scripts": {
+    "dev": "egg-bin dev",
+    "debug": "egg-bin debug",
+    "start": "egg-scripts start --daemon --title=egg-server-tom-mall",
+    "stop": "egg-scripts stop --title=egg-server-tom-mall",
+    "test": "npm run lint",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dayjs": "^1.11.13",
+    "egg": "^3.30.0",
+    "egg-cors": "^2.2.3",
+    "egg-scripts": "^2.15.1",
+    "egg-sequelize": "^6.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.12.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-egg": "^12.0.0",
+    "egg-bin": "^6.9.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

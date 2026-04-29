@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="card">
+    <view class="title">{{title}}</view>
+    <view class="desc">阶段 0 已完成基础目录初始化。</view>
+  </view>
+</view>
