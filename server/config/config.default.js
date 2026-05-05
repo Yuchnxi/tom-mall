@@ -58,6 +58,27 @@ module.exports = appInfo => {
     fileSize: '10mb',
   };
 
+  // 本地开发环境在控制台管道断开后继续写 stdout，容易触发 EPIPE 死循环
+  // 统一在应用 ready 后关闭控制台输出，并将控制台日志级别提升为 WARN
+  config.logger = {
+    consoleLevel: appInfo.env === 'local' ? 'WARN' : 'INFO',
+    disableConsoleAfterReady: true,
+  };
+
+  // 为核心日志开启按体积轮转，避免异常刷屏时单个日志文件无限膨胀
+  config.logrotator = {
+    filesRotateBySize: [
+      'common-error.log',
+      'egg-agent.log',
+      'egg-web.log',
+      'tom-mall-server-web.log',
+    ],
+    maxFileSize: 100 * 1024 * 1024,
+    maxFiles: 3,
+    rotateDuration: 60000,
+    maxDays: 7,
+  };
+
   config.swaggerdoc = {
     dirScanner: './app/controller',
     apiInfo: {
