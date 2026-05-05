@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { getAdminInfo } from '@/api/auth';
+import AppLayout from '@/components/layout/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 import pinia from '@/stores/pinia';
 import DashboardView from '@/views/DashboardView.vue';
@@ -13,8 +14,17 @@ const routes = [
   },
   {
     path: '/',
-    name: 'dashboard',
-    component: DashboardView,
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'dashboard',
+        component: DashboardView,
+        meta: {
+          title: '首页',
+        },
+      },
+    ],
   },
 ];
 

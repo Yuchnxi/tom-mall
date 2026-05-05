@@ -6,6 +6,9 @@ import router from './router';
 import pinia from './stores/pinia';
 import './styles/theme.css';
 
+const savedTheme = window.localStorage.getItem('tom-mall-admin-theme');
+document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+
 createApp(App)
   .use(pinia)
   .use(router)
