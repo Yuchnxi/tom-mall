@@ -34,15 +34,17 @@ const router = createRouter({
 });
 
 let restorePromise = null;
+let hasRestoredFromServer = false;
 
 async function restoreAuthState() {
   const authStore = useAuthStore(pinia);
 
   if (!authStore.token) {
+    hasRestoredFromServer = false;
     return false;
   }
 
-  if (authStore.adminInfo) {
+  if (hasRestoredFromServer && authStore.adminInfo) {
     return true;
   }
 
@@ -50,10 +52,12 @@ async function restoreAuthState() {
     restorePromise = getAdminInfo()
       .then(data => {
         authStore.setProfile(data);
+        hasRestoredFromServer = true;
         return true;
       })
       .catch(() => {
         authStore.clearAuth();
+        hasRestoredFromServer = false;
         return false;
       })
       .finally(() => {

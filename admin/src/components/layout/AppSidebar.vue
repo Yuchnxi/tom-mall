@@ -24,25 +24,18 @@
         :default-active="activeMenu"
         :collapse="collapsed"
         :collapse-transition="false"
+        popper-class="sidebar-menu-popper"
         class="sidebar-menu"
         background-color="transparent"
         text-color="rgba(225, 236, 243, 0.72)"
         active-text-color="#ffffff"
         @select="handleSelect"
       >
-        <el-menu-item
-          v-for="item in menuList"
+        <SidebarMenuNode
+          v-for="item in menuTree"
           :key="item.index"
-          :index="item.index"
-          :disabled="item.disabled"
-        >
-          <el-icon>
-            <component :is="item.icon" />
-          </el-icon>
-          <template #title>
-            <span>{{ item.label }}</span>
-          </template>
-        </el-menu-item>
+          :node="item"
+        />
       </el-menu>
     </el-scrollbar>
   </aside>
@@ -62,6 +55,7 @@ import {
   ShoppingCartFull,
   User,
 } from '@element-plus/icons-vue';
+import SidebarMenuNode from './SidebarMenuNode.vue';
 import { useAuthStore } from '@/stores/auth';
 
 defineProps({
@@ -74,19 +68,6 @@ defineProps({
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-
-const fallbackMenus = [
-  { index: '/', label: '首页', icon: Histogram, disabled: false },
-  { index: '/dashboard/analytics', label: '数据概览', icon: DataAnalysis, disabled: true },
-  { index: '/orders', label: '订单管理', icon: Memo, disabled: true },
-  { index: '/products', label: '商品管理', icon: Goods, disabled: true },
-  { index: '/users', label: '用户管理', icon: User, disabled: true },
-  { index: '/operations', label: '营销管理', icon: ShoppingCartFull, disabled: true },
-  { index: '/content', label: '内容管理', icon: MenuIcon, disabled: true },
-  { index: '/finance', label: '财务管理', icon: Management, disabled: true },
-  { index: '/reports', label: '报表分析', icon: DataAnalysis, disabled: true },
-  { index: '/system', label: '系统设置', icon: Setting, disabled: true },
-];
 
 function pickIcon(iconName) {
   const iconMap = {
@@ -104,30 +85,59 @@ function pickIcon(iconName) {
   return iconMap[iconName] || Histogram;
 }
 
-const menuList = computed(() => {
-  if (!Array.isArray(authStore.menus) || authStore.menus.length === 0) {
-    return fallbackMenus;
+function normalizeMenu(menu) {
+  const children = Array.isArray(menu.children) ?
+    menu.children
+      .filter(child => child?.isHidden !== 1 && child?.type !== 3)
+      .map(normalizeMenu)
+      .filter(Boolean) :
+    [];
+
+  const path = menu.path || '';
+  const index = path || `menu-${menu.id}`;
+  const disabled = !path && children.length === 0;
+
+  return {
+    index,
+    path,
+    label: menu.title || menu.name || '未命名菜单',
+    icon: pickIcon(menu.icon),
+    disabled,
+    children,
+  };
+}
+
+const menuTree = computed(() => {
+  const realMenus = Array.isArray(authStore.menus) ? authStore.menus : [];
+  const visibleMenus = realMenus
+    .filter(item => item?.isHidden !== 1 && item?.type !== 3)
+    .map(normalizeMenu)
+    .filter(Boolean);
+
+  if (visibleMenus.length > 0) {
+    return visibleMenus;
   }
 
-  return authStore.menus
-    .filter(item => item?.type !== 3)
-    .map(item => ({
-      index: item.path || item.route || '/',
-      label: item.title || item.name || '未命名菜单',
-      icon: pickIcon(item.icon),
-      disabled: !item.path || item.path === '#',
-    }));
+  return [
+    {
+      index: '/',
+      path: '/',
+      label: '首页',
+      icon: Histogram,
+      disabled: false,
+      children: [],
+    },
+  ];
 });
 
 const activeMenu = computed(() => route.path || '/');
 
 function handleSelect(index) {
-  const target = menuList.value.find(item => item.index === index);
-  if (!target || target.disabled || target.index === route.path) {
+  if (!index || index.startsWith('menu-') || index === route.path) {
     return;
   }
 
-  router.push(target.index);
+  router.push(index);
 }
 </script>
 
@@ -214,7 +224,8 @@ function handleSelect(index) {
   border-right: 0;
 }
 
-.sidebar-menu :deep(.el-menu-item) {
+.sidebar-menu :deep(.el-menu-item),
+.sidebar-menu :deep(.el-sub-menu__title) {
   margin-bottom: 8px;
   border-radius: 12px;
   height: 44px;
@@ -226,7 +237,8 @@ function handleSelect(index) {
     color 0.18s ease;
 }
 
-.sidebar-menu :deep(.el-menu-item:hover) {
+.sidebar-menu :deep(.el-menu-item:hover),
+.sidebar-menu :deep(.el-sub-menu__title:hover) {
   color: #ffffff;
   background: rgba(61, 213, 152, 0.14);
   box-shadow: inset 0 0 0 1px rgba(61, 213, 152, 0.18);
@@ -243,8 +255,18 @@ function handleSelect(index) {
 }
 
 .sidebar-menu :deep(.el-menu-item:hover .el-icon),
-.sidebar-menu :deep(.el-menu-item:hover span) {
+.sidebar-menu :deep(.el-menu-item:hover span),
+.sidebar-menu :deep(.el-sub-menu__title:hover .el-icon),
+.sidebar-menu :deep(.el-sub-menu__title:hover span) {
   color: #ffffff;
+}
+
+.sidebar-menu :deep(.el-sub-menu .el-menu) {
+  background: transparent;
+}
+
+.sidebar-menu :deep(.el-sub-menu .el-menu-item) {
+  padding-left: 44px !important;
 }
 
 .sidebar-menu :deep(.el-menu-item.is-disabled) {
