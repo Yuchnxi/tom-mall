@@ -12,18 +12,20 @@ module.exports = options => {
       return;
     }
 
+    let payload;
     try {
-      const payload = jwt.verify(token, ctx.app.config.jwt.secret);
-
-      if (options.type === 'mp') {
-        ctx.user = payload;
-      } else {
-        ctx.admin = payload;
-      }
-
-      await next();
+      payload = jwt.verify(token, ctx.app.config.jwt.secret);
     } catch (error) {
       ctx.helper.fail(401, '请先登录');
+      return;
     }
+
+    if (options.type === 'mp') {
+      ctx.user = payload;
+    } else {
+      ctx.admin = payload;
+    }
+
+    await next();
   };
 };
